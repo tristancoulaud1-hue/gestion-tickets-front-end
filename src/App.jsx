@@ -10,8 +10,8 @@ function App() {
   };
 
   return (
-    <div>
-      <h1>Ticket Manager</h1>
+    <div className="container">
+      <h1>🎫 Ticket Manager</h1>
       <TicketForm onTicketCreated={handleTicketCreated} />
       <TicketList refresh={refresh} />
     </div>

@@ -23,7 +23,6 @@ function TicketForm({ onTicketCreated }) {
 
     await createTicket(newTicket);
 
-    // Reset form
     setTitle("");
     setDescription("");
     setStatus("Open");
@@ -31,7 +30,7 @@ function TicketForm({ onTicketCreated }) {
     setTags("");
     setCreatedAt("");
 
-    onTicketCreated(); // Rafraîchir la liste
+    onTicketCreated();
   };
 
   return (
@@ -52,7 +51,8 @@ function TicketForm({ onTicketCreated }) {
         onChange={(e) => setDescription(e.target.value)}
         required
       />
-    <select value={status} onChange={(e) => setStatus(e.target.value)}>
+
+      <select value={status} onChange={(e) => setStatus(e.target.value)}>
         <option>Open</option>
         <option>In Progress</option>
         <option>Done</option>
