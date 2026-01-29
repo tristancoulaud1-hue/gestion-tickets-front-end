@@ -1,168 +1,75 @@
 # 📚 LEARNING.md — Journal d’apprentissage
 
-Ce document retrace les apprentissages réalisés lors du développement du projet **Ticket Manager** (Backend FastAPI + Frontend React).
+Ce document retrace les apprentissages réalisés lors du développement collectif du projet **Ticket Manager** (Backend FastAPI + Frontend React).
 
 L’objectif est de montrer :
-
-- ce que j’ai appris techniquement,
-- les problèmes rencontrés,
-- comment ils ont été résolus,
-- comment un LLM a été utilisé de manière critique.
+- Ce que **nous** avons appris techniquement.
+- Les problèmes que **nous** avons rencontrés et leurs résolutions.
+- Comment **nous** avons utilisé un LLM de manière critique.
 
 ---
 
 ## 🎯 Contexte du projet
 
-Dans l’entreprise, les demandes (bugs, support, améliorations) arrivent via plusieurs canaux (emails, Slack, messages informels), ce qui entraîne :
-
-- pertes d’informations,
-- mauvaise priorisation,
-- manque de visibilité sur l’avancement.
-
-Le but du projet est de créer un **prototype fonctionnel** pour centraliser les tickets, avec :
-
-- un backend Python (FastAPI),
-- un frontend React,
-- un stockage simple en fichier JSON (sans base de données).
+Le but de notre projet est de créer un **prototype fonctionnel** pour centraliser les tickets (bugs, support, améliorations) afin d'éviter les pertes d'informations et le manque de visibilité, avec :
+- Un backend Python (FastAPI).
+- Un frontend React.
+- Un stockage simple en fichier JSON.
 
 ---
 
 ## 🧠 Apprentissages techniques
 
 ### 1️⃣ Backend – Python & FastAPI
+- **Architecture** : Nous avons appris à créer une API REST structurée avec FastAPI.
+- **Organisation** : Nous avons séparé les responsabilités entre les routes, les services et les modèles Pydantic.
+- **Persistance** : Nous avons manipulé un fichier JSON pour simuler une base de données persistante.
+- **Logique métier** : Nous avons implémenté un CRUD complet incluant des filtres complexes, le tri et la pagination.
 
-- Création d’une API REST avec **FastAPI**
-- Séparation claire des responsabilités :
-  - routes
-  - services
-  - modèles (Pydantic)
-- Manipulation d’un fichier JSON comme stockage persistant
-- Mise en place d’un CRUD complet (GET, POST, PATCH, DELETE)
-- Ajout de filtres, tri et pagination via query parameters
-- Gestion des erreurs HTTP (400, 404, 422)
-
-### 2️⃣ Validation des données avec Pydantic
-
-- Utilisation de `BaseModel`
-- Validation stricte avec `Literal`
-- Différence entre erreurs backend (422) et erreurs frontend
-- Importance de la casse exacte (`In Progress` ≠ `In progress`)
-
-### 3️⃣ Frontend – React
-
-- Création de composants réutilisables :
-  - TicketList
-  - TicketItem
-  - TicketFilters
-  - Pagination
-  - TicketModal
-- Gestion de l’état avec `useState`
-- Gestion des effets avec `useEffect`
-- Bonnes pratiques :
-  - plusieurs `useEffect` avec responsabilités distinctes
-  - séparation logique UI / data
-- Appels API via `fetch`
-- Gestion de la pagination, du tri asc/desc et des filtres
-- Création d’un modal pour afficher et modifier un ticket
-- UX : loader, messages d’erreur, confirmation de suppression
+### 2️⃣ Frontend – React & UI/UX
+- **Composants atomiques** : Nous avons découpé l'interface en petits composants réutilisables (`SuppModal`, `TicketItem`, `Pagination`) pour faciliter la maintenance.
+- **Sécurisation des actions** : Nous avons mis en place un workflow de "double validation" via une modale de confirmation personnalisée pour éviter les suppressions accidentelles.
+- **Enrichissement visuel** : Nous avons intégré les **Google Material Symbols** via CDN pour rendre l'interface plus intuitive.
+- **Styles dynamiques** : Nous avons utilisé des variables CSS et des classes conditionnelles pour colorer les tickets selon leur statut ou leur priorité.
 
 ---
 
-## 🐛 Erreurs rencontrées & corrections
+## 🛠 Problèmes rencontrés & Solutions
 
-### ❌ Erreur 1 — 422 Unprocessable Entity
+### ❌ Erreur 1 — Problème de typage JSON
+**Problème :** Les IDs des tickets passaient parfois de `int` à `str` après l'enregistrement.
+**Solution :** Nous avons forcé le typage dans le service Backend et vérifié que le Frontend envoyait les données au bon format.
 
-**Problème :**
-Le backend refusait certaines requêtes PATCH.
+### ❌ Erreur 2 — La Pagination "Fantôme"
+**Problème :** La page 1 ne se rechargait pas lors d'un changement de filtre.
+**Solution :** Nous avons séparé la logique en deux `useEffect` distincts (un pour réinitialiser la page, un pour charger les données).
 
-**Cause :**
-La validation Pydantic est stricte :
-
-```json
-"In progress" ❌
-"In Progress" ✅
-```
-
-**Solution :**
-Alignement strict des valeurs côté frontend avec les `Literal` du backend.
-
----
-
-### ❌ Erreur 2 — Boucle infinie avec useEffect
-
-**Problème :**
-Le composant rechargeait les tickets en boucle.
-
-**Cause :**
-`setPage()` était appelé dans un `useEffect` qui dépendait de `page`.
-
-**Solution :**
-Séparer la logique en deux `useEffect` :
-
-- un pour reset la page,
-- un pour charger les données.
-
----
-
-### ❌ Erreur 3 — Fonction non définie (`onOpen`)
-
-**Problème :**
-Erreur JavaScript lors du clic sur un ticket.
-
-**Cause :**
-La prop `onOpen` était utilisée mais non passée au composant.
-
-**Solution :**
-Ajouter explicitement la prop et vérifier les signatures des composants.
+### ❌ Erreur 3 — Propagation des événements (Event Bubbling)
+**Problème :** En cliquant sur le bouton "Supprimer", la modale de détails du ticket s'ouvrait aussi.
+**Cause :** L'événement de clic remontait du bouton vers le parent `<li>`.
+**Solution :** Nous avons ajouté `e.stopPropagation()` sur tous les éléments cliquables internes pour isoler les actions.
 
 ---
 
 ## 🤖 Utilisation du LLM (IA)
 
-### Prompt 1 — Génération de tickets JSON
-
-> « Génère 10 tickets réalistes pour une application de gestion de bugs »
-
----
-
-### Prompt 2 — Compréhension de FastAPI & Pydantic
-
-> « Explique-moi la validation Pydantic avec Literal et Optional »
-
----
-
-### Prompt 3 — Architecture React
-
+### Prompt 1 — Architecture React
 > « Quelle est la bonne pratique pour organiser des composants React avec filtres et pagination ? »
 
----
+### Prompt 2 — Refactoring & UX
+> « Comment transformer un simple bouton texte en bouton avec icône Google Material sans casser mon layout Flexbox ? »
+
+### Prompt 3 — Sécurité UI
+> « Nous voulons créer une modale de confirmation de suppression sans bibliothèque externe, comment passer les données du ticket proprement ? »
 
 ### ⚠️ Exemple où le LLM s’est trompé
-
-Le LLM proposait un `useEffect` unique combinant reset page + fetch.
-
-**Vérification :**
-Tests manuels et raisonnement sur le cycle de vie React.
+L'IA nous a initialement proposé de créer un fichier CSS par composant, ce qui aurait dispersé notre code.
+**Notre décision :** Nous avons choisi de centraliser les styles dans `main.css` avec des variables pour garder une cohérence globale plus simple à gérer à deux.
 
 ---
 
-## 📈 Ce que je retiens
+## 📈 Ce que nous retenons
 
-- Importance de la validation backend
-- Découpage clair frontend / backend
-- L’IA est un assistant, pas une vérité absolue
-
----
-
-## 🚀 Améliorations possibles
-
-- Authentification (JWT)
-- Base de données (Mysql)
-- Tests automatisés
-- Dockerisation
-
----
-
-## ✅ Conclusion
-
-Ce projet nous a permis de travailler sur un prototype proche d’un contexte professionnel et de consolider nos compétences en Python, FastAPI et React.
+- **L'importance du feedback** : Une application doit prévenir l'utilisateur avant une erreur (modale) et être claire visuellement (icônes).
+- **Le travail d'équipe** : La séparation nette entre le Backend et le Frontend nous a permis de progresser en parallèle efficacement.
+- **L’IA comme assistant** : Elle nous fait gagner du temps sur la syntaxe, mais nous restons les architectes des choix finaux.
