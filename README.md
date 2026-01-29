@@ -4,7 +4,7 @@ Bienvenue sur le Frontend de l'application **Ticket Manager**. Ce projet est une
 
 Ce projet fonctionne de pair avec une API Backend.
 
-## 🚀 Fonctionnalités Principales
+## Fonctionnalités Principales
 
 * **Création de Tickets** : Formulaire intuitif (titre, description, priorité, tags) avec panneau rétractable.
 * **Système de Modales** :
@@ -47,26 +47,32 @@ src/
 │   └── main.css         # Feuille de style globale (Thème & Layout)
 ├── App.jsx              # Structure de la page (Header + Toggle Formulaire)
 └── main.jsx             # Point d'entrée de l'application React
+```
 
-Installation et Démarrage
-Prérequis : Assurez-vous d'avoir Node.js installé.
+## Installation et Démarrage
 
-Installation des dépendances :
+1. **Prérequis** : Assurez-vous d'avoir Node.js installé.
 
-Bash
+2. **Installation des dépendances** :
+
+```text
 npm install
-Lancement du serveur de développement :
+```
 
-Bash
+3. **Lancement du serveur de développement** :
+
+```text
 npm run dev
+```
 L'application sera accessible sur http://localhost:5173 (par défaut).
 
-Connexion au Backend : Le frontend est configuré pour communiquer avec un serveur local sur le port 8000.
+4. **Connexion au Backend** : Le frontend est configuré pour communiquer avec un serveur local sur le port **8000**.
 
-Configuration visible dans : src/services/api.js
+* Configuration visible dans : src/services/api.js
 
-JavaScript
+```JavaScript
 const API_BASE_URL = "[http://127.0.0.1:8000](http://127.0.0.1:8000)";
+```
 
 
-Projet réalisé dans le cadre d'un atelier de développement Web Fullstack.
+*Projet réalisé dans le cadre d'un atelier de développement Web Fullstack*
