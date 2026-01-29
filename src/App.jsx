@@ -14,12 +14,23 @@ function App() {
   return (
     <div className="container">
       <div className="header-container">
-        <h1>🎫 Ticket Manager</h1>
+        <h1>Ticket Manager</h1>
         <button 
           className={`btn-toggle ${isFormOpen ? 'btn-close' : 'btn-open'}`}
           onClick={() => setIsFormOpen(!isFormOpen)}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px' }} // Optionnel : pour bien aligner l'icône et le texte
         >
-          {isFormOpen ? "❌ Fermer le formulaire" : "➕ Nouveau Ticket"}
+          {isFormOpen ? (
+            <>
+              <span className="material-symbols-outlined">close</span>
+              Fermer le formulaire
+            </>
+          ) : (
+            <>
+              <span className="material-symbols-outlined">add</span>
+              Nouveau Ticket
+            </>
+          )}
         </button>
       </div>
       {isFormOpen && (

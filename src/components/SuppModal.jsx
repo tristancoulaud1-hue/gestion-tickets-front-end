@@ -5,7 +5,7 @@ function SuppModal({ ticket, onClose, onConfirm }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h3>⚠️ Confirmation de suppression</h3>
-        <div style={{ margin: "15px 0" }}> {/* Un conteneur pour aérer */}
+        <div style={{ margin: "15px 0" }}>
             <p style={{ marginBottom: "8px", color: "#666" }}>
                 Voulez-vous vraiment supprimer le ticket :
             </p>
