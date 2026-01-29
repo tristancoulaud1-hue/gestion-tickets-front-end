@@ -256,13 +256,13 @@ ul {
   border: 1px solid transparent;
 }
 
-.status-open { background-color: #dbeafe; color: #1e40af; border-color: #93c4ff; }
-.status-in-progress { background-color: #fef3c7; color: #92400e; border-color: #ffde58; }
-.status-done { background-color: #dcfce7; color: #166534; border-color: #81ffad; }
+.status-open { background-color: #93c4ff !important; color: #000000 !important; }
+.status-in-progress { background-color: #ffde58 !important; color: #000000 !important; }
+.status-done { background-color: #81ffad !important; color: #000000 !important;}
 
-.priority-high { background-color: #fee2e2; color: #991b1b; }
-.priority-medium { background-color: #ffedd5; color: #9a3412; }
-.priority-low { background-color: #f3f4f6; color: #374151; }
+.priority-high { background-color: #ff5252 !important; color: #000000 !important; }
+.priority-medium { background-color: #ff971f !important; color: #000000 !important; }
+.priority-low { background-color: #93c4ff !important; color: #000000 !important; }
 
 .header-container {
   display: flex;
@@ -324,6 +324,10 @@ ul {
   }
 }
 
+.suppmodal-title {
+  padding-right: 20px!important;
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -350,6 +354,9 @@ ul {
   position: relative;
   animation: modalScale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   cursor: default;
+  min-width: 400px;
+  max-width: 550px; 
+  line-height: 1.5;
 }
 
 .modal h2 {

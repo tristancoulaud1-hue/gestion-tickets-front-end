@@ -3,7 +3,8 @@ import { fetchTickets, deleteTicket, updateTicket } from "../services/api";
 import TicketItem from "./TicketItem";
 import TicketFilters from "./TicketFilters";
 import Pagination from "./Pagination";
-import TicketModal from "./TicketModal";    
+import TicketModal from "./TicketModal";
+import SuppModal from "./SuppModal";
 
 function TicketList({ refresh }) {
   const [tickets, setTickets] = useState([]);
@@ -22,6 +23,7 @@ function TicketList({ refresh }) {
   const [totalPages, setTotalPages] = useState(1);
 
   const [selectedTicket, setSelectedTicket] = useState(null);
+  const [ticketToDelete, setTicketToDelete] = useState(null);
 
   const loadTickets = async () => {
   try {
@@ -75,6 +77,12 @@ function TicketList({ refresh }) {
     setSortOrder((o) => (o === "asc" ? "desc" : "asc"));
   };
 
+  const handleConfirmDelete = async (id) => {
+  await deleteTicket(id);
+  setTicketToDelete(null);
+  loadTickets();
+};
+
   return (
     <div>
       <h2>Liste des tickets</h2>
@@ -101,7 +109,7 @@ function TicketList({ refresh }) {
           <TicketItem
             key={ticket.id}
             ticket={ticket}
-            onDelete={handleDelete}
+            onDelete={() => setTicketToDelete(ticket)}
             onStatusChange={handleStatusChange}
             onOpen={setSelectedTicket}
           />
@@ -110,6 +118,12 @@ function TicketList({ refresh }) {
       <TicketModal
         ticket={selectedTicket}
         onClose={() => setSelectedTicket(null)}
+      />
+
+      <SuppModal
+        ticket={ticketToDelete}
+        onClose={() => setTicketToDelete(null)}
+        onConfirm={handleConfirmDelete}
       />
 
       <Pagination

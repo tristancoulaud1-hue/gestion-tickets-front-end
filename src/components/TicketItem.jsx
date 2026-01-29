@@ -19,7 +19,7 @@ function TicketItem({ ticket, onDelete, onStatusChange, onOpen }) {
         <option>Done</option>
       </select>
 
-      <button onClick={() => onDelete(ticket.id)}>
+      <button onClick={(e) => {e.stopPropagation(); onDelete(ticket.id);}}>
         ❌ Supprimer
       </button>
     </li>
