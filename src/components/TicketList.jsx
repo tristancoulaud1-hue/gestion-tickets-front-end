@@ -3,9 +3,13 @@ import { fetchTickets, deleteTicket, updateTicket } from "../services/api";
 import TicketItem from "./TicketItem";
 import TicketFilters from "./TicketFilters";
 import Pagination from "./Pagination";
+import TicketModal from "./TicketModal";    
 
 function TicketList({ refresh }) {
   const [tickets, setTickets] = useState([]);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const [status, setStatus] = useState("");
   const [priority, setPriority] = useState("");
@@ -17,7 +21,13 @@ function TicketList({ refresh }) {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const loadTickets = () => {
+  const [selectedTicket, setSelectedTicket] = useState(null);
+
+  const loadTickets = async () => {
+  try {
+    setLoading(true);
+    setError(null);
+
     const filters = {};
     if (status) filters.status = status;
     if (priority) filters.priority = priority;
@@ -30,11 +40,16 @@ function TicketList({ refresh }) {
     filters.page = page;
     filters.limit = 5;
 
-    fetchTickets(filters).then((data) => {
-      setTickets(data.data || []);
-      setTotalPages(data.pages || 1);
-    });
-  };
+    const data = await fetchTickets(filters);
+
+    setTickets(data.data ||[]);
+    setTotalPages(data.pages ||1);
+  } catch (err) {
+    setError("Erreur lors du chargement des tickets");
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     setPage(1);
@@ -45,6 +60,8 @@ function TicketList({ refresh }) {
   }, [refresh, status, priority, search, sortBy, sortOrder, page]);
 
   const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Êtes-vous sûr de vouloir supprimer ce ticket ?");
+    if (!confirmDelete) return;
     await deleteTicket(id);
     loadTickets();
   };
@@ -75,6 +92,10 @@ function TicketList({ refresh }) {
         toggleOrder={toggleOrder}
       />
 
+        {loading && <p>Chargement des tickets...</p>}
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        {!loading && tickets.length === 0 && <p>Aucun ticket trouvé.</p>}
+
       <ul>
         {tickets.map((ticket) => (
           <TicketItem
@@ -82,9 +103,14 @@ function TicketList({ refresh }) {
             ticket={ticket}
             onDelete={handleDelete}
             onStatusChange={handleStatusChange}
+            onOpen={setSelectedTicket}
           />
         ))}
       </ul>
+      <TicketModal
+        ticket={selectedTicket}
+        onClose={() => setSelectedTicket(null)}
+      />
 
       <Pagination
         page={page}
