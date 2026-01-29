@@ -18,7 +18,7 @@ function App() {
         <button 
           className={`btn-toggle ${isFormOpen ? 'btn-close' : 'btn-open'}`}
           onClick={() => setIsFormOpen(!isFormOpen)}
-          style={{ display: 'flex', alignItems: 'center', gap: '8px' }} // Optionnel : pour bien aligner l'icône et le texte
+          style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
         >
           {isFormOpen ? (
             <>
