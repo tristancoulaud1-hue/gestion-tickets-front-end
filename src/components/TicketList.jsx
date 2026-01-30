@@ -5,6 +5,8 @@ import TicketFilters from "./TicketFilters";
 import Pagination from "./Pagination";
 import TicketModal from "./TicketModal";
 import SuppModal from "./SuppModal";
+import { DndContext, closestCenter } from '@dnd-kit/core';
+import KanbanColumn from './KanbanColumn';
 
 function TicketList({ refresh }) {
   const [tickets, setTickets] = useState([]);
@@ -26,32 +28,39 @@ function TicketList({ refresh }) {
   const [ticketToDelete, setTicketToDelete] = useState(null);
 
   const loadTickets = async () => {
-  try {
     setLoading(true);
-    setError(null);
+    try {
+      const statuses = ["Open", "In progress", "Done"];
+      
+      const baseFilters = {};
+      if (priority) baseFilters.priority = priority;
+      if (search) baseFilters.search = search;
+      if (sortBy) {
+        baseFilters.sortBy = sortBy;
+        baseFilters.order = sortOrder;
+      }
 
-    const filters = {};
-    if (status) filters.status = status;
-    if (priority) filters.priority = priority;
-    if (search) filters.search = search;
-    if (sortBy) {
-      filters.sortBy = sortBy;
-      filters.order = sortOrder;
+      const responses = await Promise.all(
+        statuses.map(s => fetchTickets({ 
+          ...baseFilters,
+          status: s, 
+          page: page, 
+          limit: 3
+        }))
+      );
+
+      const allTickets = responses.flatMap(r => r.data || []); 
+      setTickets(allTickets);
+
+      const maxPages = Math.max(...responses.map(r => r.pages || 1));
+      setTotalPages(maxPages);
+    } catch (err) {
+      console.error(err);
+      setError("Erreur lors du chargement des colonnes");
+    } finally {
+      setLoading(false);
     }
-
-    filters.page = page;
-    filters.limit = 5;
-
-    const data = await fetchTickets(filters);
-
-    setTickets(data.data ||[]);
-    setTotalPages(data.pages ||1);
-  } catch (err) {
-    setError("Erreur lors du chargement des tickets");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   useEffect(() => {
     setPage(1);
@@ -81,7 +90,23 @@ function TicketList({ refresh }) {
   await deleteTicket(id);
   setTicketToDelete(null);
   loadTickets();
-};
+  };
+
+  const handleDragEnd = async (event) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const ticketId = active.id;
+      const newStatus = over.id;
+      await handleStatusChange(ticketId, newStatus);
+    }
+  };
+
+  const columns = {
+      "Open": tickets.filter(t => t.status === "Open"),
+      "In progress": tickets.filter(t => t.status === "In progress"),
+      "Done": tickets.filter(t => t.status === "Done"),
+    };
 
   return (
     <div>
@@ -89,7 +114,6 @@ function TicketList({ refresh }) {
 
       <TicketFilters
         status={status}
-        setStatus={setStatus}
         priority={priority}
         setPriority={setPriority}
         search={search}
@@ -104,17 +128,21 @@ function TicketList({ refresh }) {
         {error && <p style={{ color: "red" }}>{error}</p>}
         {!loading && tickets.length === 0 && <p>Aucun ticket trouvé.</p>}
 
-      <ul>
-        {tickets.map((ticket) => (
-          <TicketItem
-            key={ticket.id}
-            ticket={ticket}
-            onDelete={() => setTicketToDelete(ticket)}
-            onStatusChange={handleStatusChange}
-            onOpen={setSelectedTicket}
-          />
-        ))}
-      </ul>
+      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <div className="kanban-board">
+          {Object.entries(columns).map(([statusName, columnTickets]) => (
+            <KanbanColumn
+              key={statusName}
+              status={statusName}
+              tickets={columnTickets}
+              onDelete={setTicketToDelete}
+              onStatusChange={handleStatusChange}
+              onOpen={setSelectedTicket}
+            />
+          ))}
+        </div>
+      </DndContext>
+
       <TicketModal
         ticket={selectedTicket}
         onClose={() => setSelectedTicket(null)}
