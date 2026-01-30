@@ -10,10 +10,6 @@ function TicketForm({ onTicketCreated }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    
-    const newDate = new Date();
-    const dateFormatted = newDate.toISOString().split("T")[0];
     
     const newTicket = {
     title,
@@ -21,7 +17,6 @@ function TicketForm({ onTicketCreated }) {
     status,
     priority,
     tags: tags.split(",").map((t) => t.trim()),
-    createdAt: dateFormatted,
     };
 
     await createTicket(newTicket);
