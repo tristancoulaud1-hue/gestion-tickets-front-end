@@ -93,20 +93,33 @@ function TicketList({ refresh }) {
   };
 
   const handleDragEnd = async (event) => {
-    const { active, over } = event;
+  const { active, over } = event;
 
-    if (over && active.id !== over.id) {
-      const ticketId = active.id;
-      const newStatus = over.id;
+  if (!over) return;
+
+  const ticketId = active.id;
+  let newStatus = over.id;
+
+  const overTicket = tickets.find(t => t.id === over.id);
+  if (overTicket) {
+    newStatus = overTicket.status;
+  }
+
+  const authorizedStatuses = ["Open", "In progress", "Done"];
+  
+  if (authorizedStatuses.includes(newStatus)) {
+    const currentTicket = tickets.find(t => t.id === ticketId);
+    if (currentTicket && currentTicket.status !== newStatus) {
       await handleStatusChange(ticketId, newStatus);
     }
-  };
+  }
+};
 
   const columns = {
-      "Open": tickets.filter(t => t.status === "Open"),
-      "In progress": tickets.filter(t => t.status === "In progress"),
-      "Done": tickets.filter(t => t.status === "Done"),
-    };
+    "Open": (tickets || []).filter(t => t.status === "Open"),
+    "In progress": (tickets || []).filter(t => t.status === "In progress"),
+    "Done": (tickets || []).filter(t => t.status === "Done"),
+  };
 
   return (
     <div>

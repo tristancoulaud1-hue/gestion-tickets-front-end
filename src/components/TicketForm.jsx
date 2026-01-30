@@ -53,7 +53,7 @@ function TicketForm({ onTicketCreated }) {
 
       <select value={status} onChange={(e) => setStatus(e.target.value)}>
         <option>Open</option>
-        <option>In Progress</option>
+        <option>In progress</option>
         <option>Done</option>
       </select>
 
