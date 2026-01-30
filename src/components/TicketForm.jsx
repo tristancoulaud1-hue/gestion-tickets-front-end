@@ -7,18 +7,21 @@ function TicketForm({ onTicketCreated }) {
   const [status, setStatus] = useState("Open");
   const [priority, setPriority] = useState("Low");
   const [tags, setTags] = useState("");
-  const [createdAt, setCreatedAt] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    
+    const newDate = new Date();
+    const dateFormatted = newDate.toISOString().split("T")[0];
+    
     const newTicket = {
-      title,
-      description,
-      status,
-      priority,
-      tags: tags.split(",").map((t) => t.trim()),
-      createdAt,
+    title,
+    description,
+    status,
+    priority,
+    tags: tags.split(",").map((t) => t.trim()),
+    createdAt: dateFormatted,
     };
 
     await createTicket(newTicket);
@@ -28,10 +31,11 @@ function TicketForm({ onTicketCreated }) {
     setStatus("Open");
     setPriority("Low");
     setTags("");
-    setCreatedAt("");
 
     onTicketCreated();
   };
+
+  
 
   return (
     <form onSubmit={handleSubmit}>
@@ -69,13 +73,6 @@ function TicketForm({ onTicketCreated }) {
         placeholder="Tags (séparés par des virgules)"
         value={tags}
         onChange={(e) => setTags(e.target.value)}
-      />
-
-      <input
-        type="date"
-        value={createdAt}
-        onChange={(e) => setCreatedAt(e.target.value)}
-        required
       />
 
       <button type="submit">Créer</button>
